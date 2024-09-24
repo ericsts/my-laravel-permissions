@@ -93,4 +93,14 @@ class UserResource extends Resource
             'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return auth()->user()->hasRole('Admin')
+            ? parent::getEloquentQuery()
+            : parent::getEloquentQuery()->whereHas(
+                'roles',
+                fn (Builder $query) => $query->where('name', '!=', 'Admin')
+            );
+    }
 }
